@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "python3 scripts/unpack_source.py && next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
