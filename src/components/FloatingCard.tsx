@@ -9,10 +9,18 @@ type Rect = {
   height: number;
 };
 
+type SafeZoneEllipse = {
+  centerX: number;
+  centerY: number;
+  radiusX: number;
+  radiusY: number;
+  padding: number;
+};
+
 type SceneLayout = {
   width: number;
   height: number;
-  safeZone: Rect | null;
+  safeZone: SafeZoneEllipse | null;
 };
 
 type FloatingCardProps = {
@@ -30,19 +38,15 @@ type FloatingCardProps = {
 };
 
 const accentMap = {
-  red: "from-white/78 via-white/60 to-sky-50/58 border-white/70 shadow-[0_18px_50px_rgba(125,211,252,0.12)]",
-  cyan: "from-white/80 via-cyan-50/54 to-white/58 border-cyan-100/80 shadow-[0_18px_50px_rgba(125,211,252,0.14)]",
-  blue: "from-white/82 via-sky-50/52 to-white/58 border-sky-100/80 shadow-[0_18px_50px_rgba(191,219,254,0.14)]",
+  red: "from-white/84 via-sky-50/76 to-white/74 border-white/80 shadow-[0_18px_46px_rgba(59,130,246,0.12)]",
+  cyan: "from-white/84 via-cyan-50/74 to-white/72 border-cyan-100/85 shadow-[0_18px_46px_rgba(56,189,248,0.14)]",
+  blue: "from-white/86 via-sky-50/74 to-white/72 border-sky-100/85 shadow-[0_18px_46px_rgba(96,165,250,0.14)]",
   silver:
-    "from-white/78 via-slate-50/46 to-white/54 border-white/75 shadow-[0_18px_50px_rgba(226,232,240,0.18)]",
+    "from-white/82 via-slate-50/70 to-white/72 border-white/80 shadow-[0_18px_46px_rgba(148,163,184,0.16)]",
 } as const;
 
 const OUTER_MARGIN = 18;
 const CLICK_THRESHOLD = 7;
-
-function overlaps(a: Rect, b: Rect) {
-  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-}
 
 function clampRect(rect: Rect, scene: SceneLayout) {
   const maxX = Math.max(OUTER_MARGIN, scene.width - rect.width - OUTER_MARGIN);
@@ -63,20 +67,62 @@ function clampRect(rect: Rect, scene: SceneLayout) {
   return { rect: clamped, axis };
 }
 
-function computeFocusIntensity(rect: Rect, safeZone: Rect | null) {
-  if (!safeZone) return 0;
-
-  const fadeRadius = 170;
-  const dx = Math.max(safeZone.x - (rect.x + rect.width), rect.x - (safeZone.x + safeZone.width), 0);
-  const dy = Math.max(safeZone.y - (rect.y + rect.height), rect.y - (safeZone.y + safeZone.height), 0);
-  const distance = Math.hypot(dx, dy);
-
-  let intensity = Math.max(0, 1 - distance / fadeRadius);
-  if (overlaps(rect, safeZone)) {
-    intensity = 1;
+function resolveSafeZoneCollision(rect: Rect, safeZone: SafeZoneEllipse | null) {
+  if (!safeZone) {
+    return {
+      rect,
+      collided: false,
+      normalX: 0,
+      normalY: 0,
+      penetration: 0,
+    };
   }
 
-  return intensity;
+  const centerX = rect.x + rect.width / 2;
+  const centerY = rect.y + rect.height / 2;
+  const expandedRadiusX = safeZone.radiusX + rect.width / 2 + safeZone.padding;
+  const expandedRadiusY = safeZone.radiusY + rect.height / 2 + safeZone.padding;
+
+  let dx = centerX - safeZone.centerX;
+  let dy = centerY - safeZone.centerY;
+  let nx = dx / expandedRadiusX;
+  let ny = dy / expandedRadiusY;
+  let distance = Math.hypot(nx, ny);
+
+  if (distance >= 1) {
+    return {
+      rect,
+      collided: false,
+      normalX: 0,
+      normalY: 0,
+      penetration: 0,
+    };
+  }
+
+  if (distance < 0.0001) {
+    dx = 0;
+    dy = -1;
+    nx = 0;
+    ny = -1;
+    distance = 0;
+  }
+
+  const unitX = nx / Math.max(distance, 0.0001);
+  const unitY = ny / Math.max(distance, 0.0001);
+  const boundaryCenterX = safeZone.centerX + unitX * expandedRadiusX;
+  const boundaryCenterY = safeZone.centerY + unitY * expandedRadiusY;
+
+  return {
+    rect: {
+      ...rect,
+      x: boundaryCenterX - rect.width / 2,
+      y: boundaryCenterY - rect.height / 2,
+    },
+    collided: true,
+    normalX: unitX,
+    normalY: unitY,
+    penetration: 1 - distance,
+  };
 }
 
 export function FloatingCard({
@@ -101,7 +147,6 @@ export function FloatingCard({
   const pointerOffsetRef = useRef({ x: 0, y: 0 });
   const pointerLastRef = useRef({ x: 0, y: 0, time: 0 });
   const totalDragDistanceRef = useRef(0);
-  const visualStateRef = useRef({ current: 0, target: 0 });
   const collisionCooldownRef = useRef(0);
   const stateRef = useRef({
     x: 0,
@@ -139,16 +184,17 @@ export function FloatingCard({
       width,
       height,
     };
-    const { rect } = clampRect(proposed, scene);
-    stateRef.current.x = rect.x;
-    stateRef.current.y = rect.y;
+    const clamped = clampRect(proposed, scene);
+    const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
+
+    stateRef.current.x = resolved.rect.x;
+    stateRef.current.y = resolved.rect.y;
     stateRef.current.vx = 0;
     stateRef.current.vy = 0;
+
     if (cardRef.current) {
-      cardRef.current.style.transform = `translate3d(${rect.x}px, ${rect.y}px, 0)`;
+      cardRef.current.style.transform = `translate3d(${resolved.rect.x}px, ${resolved.rect.y}px, 0)`;
     }
-    visualStateRef.current.current = computeFocusIntensity(rect, scene.safeZone);
-    visualStateRef.current.target = visualStateRef.current.current;
   }, [scene, initialPosition]);
 
   useEffect(() => {
@@ -179,48 +225,42 @@ export function FloatingCard({
         };
 
         const before = { x: nextRect.x, y: nextRect.y };
-        const result = clampRect(nextRect, scene);
-        state.x = result.rect.x;
-        state.y = result.rect.y;
+        const clamped = clampRect(nextRect, scene);
+        const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
 
-        if (result.axis === "x" && time - collisionCooldownRef.current > 120) {
+        state.x = resolved.rect.x;
+        state.y = resolved.rect.y;
+
+        if (resolved.collided && time - collisionCooldownRef.current > 120) {
+          collisionCooldownRef.current = time;
+          const speed = state.vx * resolved.normalX + state.vy * resolved.normalY;
+
+          if (speed < 0) {
+            state.vx -= speed * resolved.normalX * 1.28;
+            state.vy -= speed * resolved.normalY * 1.28;
+          }
+
+          state.vx += resolved.normalX * Math.min(0.22, 0.08 + resolved.penetration * 0.26);
+          state.vy += resolved.normalY * Math.min(0.22, 0.08 + resolved.penetration * 0.26);
+          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.12);
+        } else if (clamped.axis === "x" && time - collisionCooldownRef.current > 120) {
           collisionCooldownRef.current = time;
           state.vx *= -0.28;
           state.vy *= 0.9;
-          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.18);
-        } else if (result.axis === "y" && time - collisionCooldownRef.current > 120) {
+          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
+        } else if (clamped.axis === "y" && time - collisionCooldownRef.current > 120) {
           collisionCooldownRef.current = time;
           state.vy *= -0.28;
           state.vx *= 0.9;
-          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.18);
-        } else if (before.x !== result.rect.x || before.y !== result.rect.y) {
+          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
+        } else if (before.x !== resolved.rect.x || before.y !== resolved.rect.y) {
           state.vx *= 0.82;
           state.vy *= 0.82;
         }
       }
 
-      const visualRect = {
-        x: stateRef.current.x,
-        y: stateRef.current.y,
-        width: cardSizeRef.current.width,
-        height: cardSizeRef.current.height,
-      };
-      visualStateRef.current.target = computeFocusIntensity(visualRect, scene.safeZone);
-      visualStateRef.current.current +=
-        (visualStateRef.current.target - visualStateRef.current.current) * 0.12;
-
-      const focusIntensity = visualStateRef.current.current;
-      const focusScale = 1 - focusIntensity * 0.028;
-      const focusOpacity = 1 - focusIntensity * 0.46;
-      const blur = focusIntensity * 7.5;
-      const saturate = 1 - focusIntensity * 0.22;
-      const contrast = 1 - focusIntensity * 0.12;
-      const brightness = 1 + focusIntensity * 0.04;
-
-      element.style.transform = `translate3d(${stateRef.current.x}px, ${stateRef.current.y}px, 0) scale(${focusScale})`;
-      element.style.opacity = `${focusOpacity}`;
-      element.style.filter = `blur(${blur}px) saturate(${saturate}) contrast(${contrast}) brightness(${brightness})`;
-      element.style.zIndex = focusIntensity > 0.08 ? "1" : "2";
+      element.style.transform = `translate3d(${stateRef.current.x}px, ${stateRef.current.y}px, 0)`;
+      element.style.zIndex = draggingRef.current ? "9" : "6";
 
       frameRef.current = window.requestAnimationFrame(tick);
     };
@@ -238,10 +278,10 @@ export function FloatingCard({
       tabIndex={0}
       data-card-id={id}
       className={[
-        "floating-card absolute left-0 top-0 z-[2] w-[232px] rounded-[28px] border bg-gradient-to-br px-5 py-4 text-left backdrop-blur-2xl transition-[opacity,box-shadow,transform,background-color] duration-300 will-change-transform xl:w-[248px]",
+        "floating-card absolute left-0 top-0 z-[6] w-[232px] rounded-[28px] border bg-gradient-to-br px-5 py-4 text-left backdrop-blur-md transition-[box-shadow,transform,background-color,border-color] duration-300 will-change-transform xl:w-[248px]",
         accentMap[accent],
         desktopOnly ? "hidden xl:block" : "block",
-        isDragging ? "opacity-100 shadow-[0_22px_60px_rgba(125,211,252,0.16)]" : "",
+        isDragging ? "shadow-[0_24px_58px_rgba(59,130,246,0.18)]" : "",
         scene.width ? "opacity-100" : "opacity-0",
       ].join(" ")}
       onPointerDown={(event) => {
@@ -280,7 +320,8 @@ export function FloatingCard({
           height: cardSizeRef.current.height,
         };
 
-        const resolved = clampRect(nextRect, scene);
+        const clamped = clampRect(nextRect, scene);
+        const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
         const state = stateRef.current;
 
         const now = performance.now();
@@ -303,23 +344,10 @@ export function FloatingCard({
           time: now,
         };
 
-        if (cardRef.current) {
-          const focusIntensity = computeFocusIntensity(
-            {
-              x: state.x,
-              y: state.y,
-              width: cardSizeRef.current.width,
-              height: cardSizeRef.current.height,
-            },
-            scene.safeZone,
-          );
-          visualStateRef.current.target = focusIntensity;
-        }
-
         onDisturbance(
           state.x + cardSizeRef.current.width / 2,
           state.y + cardSizeRef.current.height / 2,
-          0.1,
+          0.08,
         );
       }}
       onPointerUp={(event) => {
@@ -353,16 +381,16 @@ export function FloatingCard({
     >
       <div className="space-y-3">
         <div className="space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500/90">
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
             {subtitle}
           </p>
           <h3 className="text-sm font-semibold leading-6 text-slate-900">{title}</h3>
         </div>
 
-        <p className="text-xs leading-5 text-slate-600">{detail}</p>
+        <p className="text-xs leading-5 text-slate-600/95">{detail}</p>
 
-        <div className="inline-flex rounded-full border border-white/70 bg-white/48 px-3 py-1.5">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+        <div className="inline-flex rounded-full border border-white/75 bg-white/58 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500/95">
             {metric}
           </span>
         </div>
