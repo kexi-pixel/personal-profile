@@ -170,7 +170,7 @@ export function Hero() {
       <div className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-start pt-6 lg:items-center lg:pt-0">
         <div
           ref={panelRef}
-          className="glass-panel hero-shell relative w-full overflow-hidden rounded-[40px] border border-white/70 px-6 py-14 shadow-[0_40px_120px_rgba(37,99,235,0.12)] sm:px-10 lg:px-16 lg:py-20 xl:px-24"
+          className="overview-interactive-shell overview-no-select glass-panel hero-shell relative w-full overflow-hidden rounded-[40px] border border-white/70 px-6 py-14 shadow-[0_40px_120px_rgba(37,99,235,0.12)] sm:px-10 lg:px-16 lg:py-20 xl:px-24"
         >
           <div className="hero-fluid-stage absolute inset-0">
             <div className="hero-plasma-field hero-plasma-field-main" />
@@ -224,7 +224,7 @@ export function Hero() {
           ))}
 
           <motion.div
-            className="relative z-20 mx-auto flex max-w-3xl flex-col items-center py-24 text-center sm:py-28 lg:py-32"
+            className="pointer-events-none relative z-20 mx-auto flex max-w-3xl flex-col items-center py-24 text-center sm:py-28 lg:py-32"
             initial={reducedMotion ? false : { opacity: 0, y: 30 }}
             animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
