@@ -13,15 +13,17 @@ const sections = [
   { id: "contact", label: "Contact" },
 ] as const;
 
+type SectionId = (typeof sections)[number]["id"];
+
 export function Navbar() {
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState<SectionId>("overview");
 
   useEffect(() => {
     let frameId = 0;
 
     const updateActiveSection = () => {
       const viewportProbe = window.innerHeight * 0.34;
-      let nextActiveSection = sections[0].id;
+      let nextActiveSection: SectionId = sections[0].id;
       let nearestDistance = Number.POSITIVE_INFINITY;
 
       for (const section of sections) {
