@@ -263,19 +263,33 @@ export function Hero() {
               </span>
             </h1>
 
-            <div className="mt-10 space-y-4">
-              <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
-                连接市场、运营与产品的复合型候选人
-              </p>
-              <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
-                Marketing Growth &amp; Operations Strategy Candidate
-              </p>
-            </div>
+            <div className="hero-lower-glass-stack relative mt-10 w-full max-w-[58rem]">
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-0 flex flex-col items-center">
+                <span className="hero-lower-capsule hero-lower-capsule-title" />
+                <span className="hero-lower-capsule hero-lower-capsule-subtitle" />
+                <div className="hero-lower-capsule-row hero-lower-capsule-row-summary">
+                  <span className="hero-lower-capsule hero-lower-capsule-summary hero-lower-capsule-summary-primary" />
+                  <span className="hero-lower-capsule hero-lower-capsule-summary hero-lower-capsule-summary-secondary" />
+                  <span className="hero-lower-capsule hero-lower-capsule-summary hero-lower-capsule-summary-tertiary" />
+                </div>
+              </div>
 
-            <p className="mt-8 max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
-              具备字节跳动与宝洁市场实习经历，关注增长运营、用户洞察与数据驱动决策，
-              能够连接市场、运营与产品相关业务场景。
-            </p>
+              <div className="relative z-[1]">
+                <div className="space-y-4">
+                  <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
+                    连接市场、运营与产品的复合型候选人
+                  </p>
+                  <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
+                    Marketing Growth &amp; Operations Strategy Candidate
+                  </p>
+                </div>
+
+                <p className="mx-auto mt-8 max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
+                  具备字节跳动与宝洁市场实习经历，关注增长运营、用户洞察与数据驱动决策，
+                  能够连接市场、运营与产品相关业务场景。
+                </p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
