@@ -15,7 +15,7 @@ const cards = [
     accent: "cyan" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
-    initialPosition: { x: 0.06, y: 0.08 },
+    initialPosition: { x: 0.06, y: 0.12 },
   },
   {
     id: "overview-pg",
@@ -26,7 +26,7 @@ const cards = [
     accent: "blue" as const,
     desktopOnly: false,
     targetId: "experience-pg",
-    initialPosition: { x: 0.77, y: 0.11 },
+    initialPosition: { x: 0.77, y: 0.13 },
   },
   {
     id: "overview-merchant",
@@ -37,7 +37,7 @@ const cards = [
     accent: "cyan" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
-    initialPosition: { x: 0.08, y: 0.68 },
+    initialPosition: { x: 0.09, y: 0.64 },
   },
   {
     id: "overview-content",
@@ -48,7 +48,7 @@ const cards = [
     accent: "silver" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
-    initialPosition: { x: 0.75, y: 0.67 },
+    initialPosition: { x: 0.74, y: 0.65 },
   },
   {
     id: "overview-impact",
@@ -59,7 +59,7 @@ const cards = [
     accent: "blue" as const,
     desktopOnly: true,
     targetId: "experience-pg",
-    initialPosition: { x: 0.19, y: 0.2 },
+    initialPosition: { x: 0.17, y: 0.33 },
   },
   {
     id: "overview-data",
@@ -70,14 +70,22 @@ const cards = [
     accent: "cyan" as const,
     desktopOnly: true,
     targetId: "experience",
-    initialPosition: { x: 0.64, y: 0.74 },
+    initialPosition: { x: 0.67, y: 0.76 },
   },
 ];
+
+type SafeZoneEllipse = {
+  centerX: number;
+  centerY: number;
+  radiusX: number;
+  radiusY: number;
+  padding: number;
+};
 
 type SceneLayout = {
   width: number;
   height: number;
-  safeZone: { x: number; y: number; width: number; height: number } | null;
+  safeZone: SafeZoneEllipse | null;
 };
 
 type Disturbance = {
@@ -109,17 +117,18 @@ export function Hero() {
       const panelRect = panel.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
       const isCompact = window.innerWidth < 1024;
-      const paddingX = isCompact ? 24 : 54;
-      const paddingY = isCompact ? 22 : 42;
+      const paddingX = isCompact ? 24 : 88;
+      const paddingY = isCompact ? 26 : 68;
 
       setLayout({
         width: panel.clientWidth,
         height: panel.clientHeight,
         safeZone: {
-          x: contentRect.left - panelRect.left - paddingX,
-          y: contentRect.top - panelRect.top - paddingY,
-          width: contentRect.width + paddingX * 2,
-          height: contentRect.height + paddingY * 2,
+          centerX: contentRect.left - panelRect.left + contentRect.width / 2,
+          centerY: contentRect.top - panelRect.top + contentRect.height / 2,
+          radiusX: contentRect.width / 2 + paddingX,
+          radiusY: contentRect.height / 2 + paddingY,
+          padding: isCompact ? 12 : 18,
         },
       });
     };
@@ -139,7 +148,7 @@ export function Hero() {
     };
   }, []);
 
-  const triggerDisturbance = (x: number, y: number, strength = 0.35) => {
+  const triggerDisturbance = (x: number, y: number, strength = 0.28) => {
     if (reducedMotion) return;
 
     const disturbance = {
@@ -152,7 +161,7 @@ export function Hero() {
     setDisturbances((current) => [...current.slice(-2), disturbance]);
     const timeout = window.setTimeout(() => {
       setDisturbances((current) => current.filter((item) => item.id !== disturbance.id));
-    }, 880);
+    }, 760);
     disturbanceTimeoutsRef.current.push(timeout);
   };
 
@@ -177,43 +186,46 @@ export function Hero() {
       id="overview"
       className="relative isolate min-h-screen overflow-hidden px-4 pb-14 pt-28 sm:px-6 lg:px-8"
     >
-      <div className="hero-grid pointer-events-none absolute inset-0 opacity-70" />
-      <div className="hero-glow hero-glow-one" />
-      <div className="hero-glow hero-glow-two" />
-      <div className="hero-glow hero-glow-three" />
+      <div className="hero-grid pointer-events-none absolute inset-0 opacity-45" />
+      <div className="hero-atmosphere hero-atmosphere-left" />
+      <div className="hero-atmosphere hero-atmosphere-right" />
 
       <div className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-start pt-6 lg:items-center lg:pt-0">
         <div
           ref={panelRef}
-          className="glass-panel relative w-full overflow-hidden rounded-[40px] border border-white/60 px-6 py-14 shadow-[0_30px_120px_rgba(148,163,184,0.18)] sm:px-10 lg:px-16 lg:py-20 xl:px-24"
+          className="glass-panel hero-shell relative w-full overflow-hidden rounded-[40px] border border-white/70 px-6 py-14 shadow-[0_40px_120px_rgba(37,99,235,0.12)] sm:px-10 lg:px-16 lg:py-20 xl:px-24"
         >
           <div className="hero-fluid-stage absolute inset-0">
-            <div className="hero-fluid-layer hero-fluid-layer-one" />
-            <div className="hero-fluid-layer hero-fluid-layer-two" />
-            <div className="hero-fluid-layer hero-fluid-layer-three" />
-            <div className="hero-fluid-ribbon hero-fluid-ribbon-one" />
-            <div className="hero-fluid-ribbon hero-fluid-ribbon-two" />
+            <div className="hero-plasma-field hero-plasma-field-main" />
+            <div className="hero-plasma-field hero-plasma-field-secondary" />
+            <div className="hero-plasma-stream hero-plasma-stream-one" />
+            <div className="hero-plasma-stream hero-plasma-stream-two" />
+            <div className="hero-plasma-ring hero-plasma-ring-one" />
+            <div className="hero-plasma-ring hero-plasma-ring-two" />
+            <div className="hero-flame-edge hero-flame-edge-left" />
+            <div className="hero-flame-edge hero-flame-edge-right" />
             <div className="hero-fluid-contour" />
             <div className="hero-fluid-glow hero-fluid-glow-one" />
             <div className="hero-fluid-glow hero-fluid-glow-two" />
             <div className="hero-fluid-grain" />
           </div>
           <HeroEnergyCore />
+          <div className="hero-safe-zone-glow" />
           <AnimatePresence>
             {disturbances.map((disturbance) => (
               <motion.div
                 key={disturbance.id}
-                className="pointer-events-none absolute z-[1] rounded-full bg-[radial-gradient(circle,rgba(219,234,254,0.3),rgba(191,219,254,0.16)_38%,rgba(255,255,255,0)_72%)] blur-2xl"
+                className="pointer-events-none absolute z-[2] rounded-full bg-[radial-gradient(circle,rgba(224,242,254,0.36),rgba(147,197,253,0.16)_42%,rgba(255,255,255,0)_76%)] blur-2xl"
                 style={{
-                  left: disturbance.x - 80,
-                  top: disturbance.y - 80,
-                  width: 160,
-                  height: 160,
+                  left: disturbance.x - 54,
+                  top: disturbance.y - 54,
+                  width: 108,
+                  height: 108,
                 }}
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: disturbance.strength, scale: 1.08 }}
-                exit={{ opacity: 0, scale: 1.16 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                animate={{ opacity: disturbance.strength, scale: 1.12 }}
+                exit={{ opacity: 0, scale: 1.22 }}
+                transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
               />
             ))}
           </AnimatePresence>
@@ -237,7 +249,7 @@ export function Hero() {
 
           <motion.div
             ref={contentRef}
-            className="relative z-10 mx-auto flex max-w-3xl flex-col items-center py-24 text-center sm:py-28 lg:py-32"
+            className="relative z-20 mx-auto flex max-w-3xl flex-col items-center py-24 text-center sm:py-28 lg:py-32"
             initial={reducedMotion ? false : { opacity: 0, y: 30 }}
             animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -247,7 +259,7 @@ export function Hero() {
                 {["大厂市场经历", "增长运营策略", "数据驱动决策"].map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-white/65 bg-white/56 px-4 py-2 text-xs text-slate-700 shadow-[0_12px_32px_rgba(255,255,255,0.26)] backdrop-blur-xl sm:text-sm"
+                    className="rounded-full border border-white/75 bg-white/64 px-4 py-2 text-xs text-slate-700 shadow-[0_14px_36px_rgba(255,255,255,0.2)] backdrop-blur-md sm:text-sm"
                   >
                     {tag}
                   </span>
@@ -261,7 +273,7 @@ export function Hero() {
                 ].map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-white/65 bg-white/56 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_32px_rgba(255,255,255,0.26)] backdrop-blur-xl sm:text-sm"
+                    className="rounded-full border border-white/72 bg-white/58 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_28px_rgba(191,219,254,0.16)] backdrop-blur-md sm:text-sm"
                   >
                     {tag}
                   </span>
