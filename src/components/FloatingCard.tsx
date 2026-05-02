@@ -9,18 +9,10 @@ type Rect = {
   height: number;
 };
 
-type SafeZoneEllipse = {
-  centerX: number;
-  centerY: number;
-  radiusX: number;
-  radiusY: number;
-  padding: number;
-};
-
 type SceneLayout = {
   width: number;
   height: number;
-  safeZone: SafeZoneEllipse | null;
+  safeZone: null;
 };
 
 type FloatingCardProps = {
@@ -65,64 +57,6 @@ function clampRect(rect: Rect, scene: SceneLayout) {
     clamped.x !== originalX ? ("x" as const) : clamped.y !== originalY ? ("y" as const) : null;
 
   return { rect: clamped, axis };
-}
-
-function resolveSafeZoneCollision(rect: Rect, safeZone: SafeZoneEllipse | null) {
-  if (!safeZone) {
-    return {
-      rect,
-      collided: false,
-      normalX: 0,
-      normalY: 0,
-      penetration: 0,
-    };
-  }
-
-  const centerX = rect.x + rect.width / 2;
-  const centerY = rect.y + rect.height / 2;
-  const expandedRadiusX = safeZone.radiusX + rect.width / 2 + safeZone.padding;
-  const expandedRadiusY = safeZone.radiusY + rect.height / 2 + safeZone.padding;
-
-  let dx = centerX - safeZone.centerX;
-  let dy = centerY - safeZone.centerY;
-  let nx = dx / expandedRadiusX;
-  let ny = dy / expandedRadiusY;
-  let distance = Math.hypot(nx, ny);
-
-  if (distance >= 1) {
-    return {
-      rect,
-      collided: false,
-      normalX: 0,
-      normalY: 0,
-      penetration: 0,
-    };
-  }
-
-  if (distance < 0.0001) {
-    dx = 0;
-    dy = -1;
-    nx = 0;
-    ny = -1;
-    distance = 0;
-  }
-
-  const unitX = nx / Math.max(distance, 0.0001);
-  const unitY = ny / Math.max(distance, 0.0001);
-  const boundaryCenterX = safeZone.centerX + unitX * expandedRadiusX;
-  const boundaryCenterY = safeZone.centerY + unitY * expandedRadiusY;
-
-  return {
-    rect: {
-      ...rect,
-      x: boundaryCenterX - rect.width / 2,
-      y: boundaryCenterY - rect.height / 2,
-    },
-    collided: true,
-    normalX: unitX,
-    normalY: unitY,
-    penetration: 1 - distance,
-  };
 }
 
 export function FloatingCard({
@@ -185,15 +119,14 @@ export function FloatingCard({
       height,
     };
     const clamped = clampRect(proposed, scene);
-    const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
 
-    stateRef.current.x = resolved.rect.x;
-    stateRef.current.y = resolved.rect.y;
+    stateRef.current.x = clamped.rect.x;
+    stateRef.current.y = clamped.rect.y;
     stateRef.current.vx = 0;
     stateRef.current.vy = 0;
 
     if (cardRef.current) {
-      cardRef.current.style.transform = `translate3d(${resolved.rect.x}px, ${resolved.rect.y}px, 0)`;
+      cardRef.current.style.transform = `translate3d(${clamped.rect.x}px, ${clamped.rect.y}px, 0)`;
     }
   }, [scene, initialPosition]);
 
@@ -226,24 +159,11 @@ export function FloatingCard({
 
         const before = { x: nextRect.x, y: nextRect.y };
         const clamped = clampRect(nextRect, scene);
-        const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
 
-        state.x = resolved.rect.x;
-        state.y = resolved.rect.y;
+        state.x = clamped.rect.x;
+        state.y = clamped.rect.y;
 
-        if (resolved.collided && time - collisionCooldownRef.current > 120) {
-          collisionCooldownRef.current = time;
-          const speed = state.vx * resolved.normalX + state.vy * resolved.normalY;
-
-          if (speed < 0) {
-            state.vx -= speed * resolved.normalX * 1.28;
-            state.vy -= speed * resolved.normalY * 1.28;
-          }
-
-          state.vx += resolved.normalX * Math.min(0.22, 0.08 + resolved.penetration * 0.26);
-          state.vy += resolved.normalY * Math.min(0.22, 0.08 + resolved.penetration * 0.26);
-          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.12);
-        } else if (clamped.axis === "x" && time - collisionCooldownRef.current > 120) {
+        if (clamped.axis === "x" && time - collisionCooldownRef.current > 120) {
           collisionCooldownRef.current = time;
           state.vx *= -0.28;
           state.vy *= 0.9;
@@ -253,7 +173,7 @@ export function FloatingCard({
           state.vy *= -0.28;
           state.vx *= 0.9;
           onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
-        } else if (before.x !== resolved.rect.x || before.y !== resolved.rect.y) {
+        } else if (before.x !== clamped.rect.x || before.y !== clamped.rect.y) {
           state.vx *= 0.82;
           state.vy *= 0.82;
         }
@@ -321,7 +241,6 @@ export function FloatingCard({
         };
 
         const clamped = clampRect(nextRect, scene);
-        const resolved = resolveSafeZoneCollision(clamped.rect, scene.safeZone);
         const state = stateRef.current;
 
         const now = performance.now();
@@ -334,10 +253,10 @@ export function FloatingCard({
           dragMovedRef.current = true;
         }
 
-        state.vx = (resolved.rect.x - state.x) / deltaTime;
-        state.vy = (resolved.rect.y - state.y) / deltaTime;
-        state.x = resolved.rect.x;
-        state.y = resolved.rect.y;
+        state.vx = (clamped.rect.x - state.x) / deltaTime;
+        state.vy = (clamped.rect.y - state.y) / deltaTime;
+        state.x = clamped.rect.x;
+        state.y = clamped.rect.y;
         pointerLastRef.current = {
           x: event.clientX,
           y: event.clientY,
