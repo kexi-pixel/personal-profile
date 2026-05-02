@@ -38,7 +38,7 @@ const accentMap = {
 } as const;
 
 const OUTER_MARGIN = 18;
-const CLICK_THRESHOLD = 7;
+const CLICK_THRESHOLD = 6;
 
 function clampRect(rect: Rect, scene: SceneLayout) {
   const maxX = Math.max(OUTER_MARGIN, scene.width - rect.width - OUTER_MARGIN);
@@ -77,9 +77,11 @@ export function FloatingCard({
   const pointerIdRef = useRef<number | null>(null);
   const draggingRef = useRef(false);
   const dragMovedRef = useRef(false);
+  const suppressClickRef = useRef(false);
   const cardSizeRef = useRef({ width: desktopOnly ? 250 : 232, height: 0 });
   const pointerOffsetRef = useRef({ x: 0, y: 0 });
   const pointerLastRef = useRef({ x: 0, y: 0, time: 0 });
+  const pointerStartRef = useRef({ x: 0, y: 0 });
   const totalDragDistanceRef = useRef(0);
   const collisionCooldownRef = useRef(0);
   const stateRef = useRef({
@@ -201,22 +203,30 @@ export function FloatingCard({
         "floating-card absolute left-0 top-0 z-[6] w-[232px] rounded-[28px] border bg-gradient-to-br px-5 py-4 text-left backdrop-blur-md transition-[box-shadow,transform,background-color,border-color] duration-300 will-change-transform xl:w-[248px]",
         accentMap[accent],
         desktopOnly ? "hidden xl:block" : "block",
+        isDragging ? "cursor-grabbing" : "cursor-grab",
         isDragging ? "shadow-[0_24px_58px_rgba(59,130,246,0.18)]" : "",
         scene.width ? "opacity-100" : "opacity-0",
       ].join(" ")}
       onPointerDown={(event) => {
         const element = cardRef.current;
-        if (!element) return;
+        if (!element || !event.isPrimary || event.button !== 0) return;
+
+        event.preventDefault();
 
         pointerIdRef.current = event.pointerId;
         draggingRef.current = true;
         dragMovedRef.current = false;
+        suppressClickRef.current = false;
         setIsDragging(true);
 
         const rect = element.getBoundingClientRect();
         pointerOffsetRef.current = {
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
+        };
+        pointerStartRef.current = {
+          x: event.clientX,
+          y: event.clientY,
         };
         pointerLastRef.current = {
           x: event.clientX,
@@ -247,10 +257,18 @@ export function FloatingCard({
         const deltaTime = Math.max(now - pointerLastRef.current.time, 8);
         const pointerDeltaX = event.clientX - pointerLastRef.current.x;
         const pointerDeltaY = event.clientY - pointerLastRef.current.y;
+        const distanceFromStart = Math.hypot(
+          event.clientX - pointerStartRef.current.x,
+          event.clientY - pointerStartRef.current.y,
+        );
         totalDragDistanceRef.current += Math.hypot(pointerDeltaX, pointerDeltaY);
 
-        if (totalDragDistanceRef.current > CLICK_THRESHOLD) {
+        if (
+          distanceFromStart > CLICK_THRESHOLD ||
+          totalDragDistanceRef.current > CLICK_THRESHOLD
+        ) {
           dragMovedRef.current = true;
+          suppressClickRef.current = true;
         }
 
         state.vx = (clamped.rect.x - state.x) / deltaTime;
@@ -272,6 +290,7 @@ export function FloatingCard({
       onPointerUp={(event) => {
         if (pointerIdRef.current !== event.pointerId) return;
 
+        event.preventDefault();
         draggingRef.current = false;
         pointerIdRef.current = null;
         setIsDragging(false);
@@ -282,11 +301,18 @@ export function FloatingCard({
         stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 1.2), -1.2);
         stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 1.2), -1.2);
 
-        if (!dragMovedRef.current) {
+        if (!suppressClickRef.current && !dragMovedRef.current) {
           onNavigate();
         }
       }}
       onPointerCancel={() => {
+        draggingRef.current = false;
+        pointerIdRef.current = null;
+        dragMovedRef.current = false;
+        suppressClickRef.current = false;
+        setIsDragging(false);
+      }}
+      onLostPointerCapture={() => {
         draggingRef.current = false;
         pointerIdRef.current = null;
         setIsDragging(false);
@@ -298,7 +324,7 @@ export function FloatingCard({
         }
       }}
     >
-      <div className="space-y-3">
+      <div className="pointer-events-none space-y-3">
         <div className="space-y-2">
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-slate-500">
             {subtitle}
