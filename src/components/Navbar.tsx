@@ -17,28 +17,59 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("overview");
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleSection = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    let frameId = 0;
 
-        if (visibleSection?.target.id) {
-          setActiveSection(visibleSection.target.id);
+    const updateActiveSection = () => {
+      const viewportProbe = window.innerHeight * 0.34;
+      let nextActiveSection = sections[0].id;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+
+        if (rect.top <= viewportProbe && rect.bottom >= viewportProbe) {
+          nextActiveSection = section.id;
+          nearestDistance = 0;
+          break;
         }
-      },
-      {
-        rootMargin: "-30% 0px -45% 0px",
-        threshold: [0.2, 0.4, 0.7],
-      },
-    );
 
-    sections.forEach(({ id }) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
-    });
+        const distanceToSection = Math.min(
+          Math.abs(rect.top - viewportProbe),
+          Math.abs(rect.bottom - viewportProbe),
+        );
 
-    return () => observer.disconnect();
+        if (distanceToSection < nearestDistance) {
+          nearestDistance = distanceToSection;
+          nextActiveSection = section.id;
+        }
+      }
+
+      setActiveSection((current) =>
+        current === nextActiveSection ? current : nextActiveSection,
+      );
+    };
+
+    const requestSectionUpdate = () => {
+      if (frameId) return;
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0;
+        updateActiveSection();
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", requestSectionUpdate, { passive: true });
+    window.addEventListener("resize", requestSectionUpdate);
+
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", requestSectionUpdate);
+      window.removeEventListener("resize", requestSectionUpdate);
+    };
   }, []);
 
   return (
