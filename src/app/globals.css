@@ -314,11 +314,44 @@ a {
   animation: heroGrainDrift 9s linear infinite;
 }
 
+.overview-no-select,
+.overview-no-select p,
+.overview-no-select h1,
+.overview-no-select h2,
+.overview-no-select h3,
+.overview-no-select h4,
+.overview-no-select h5,
+.overview-no-select h6,
+.overview-no-select span,
+.overview-no-select li,
+.overview-no-select small {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.overview-no-select a,
+.overview-no-select button,
+.overview-no-select input,
+.overview-no-select textarea,
+.overview-no-select select,
+.overview-no-select [contenteditable="true"],
+.overview-no-select .allow-select {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
 .floating-card {
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-drag: none;
   background-clip: padding-box;
   box-shadow:
     0 18px 46px rgba(59, 130, 246, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.56);
+}
+
+.floating-card:active {
+  cursor: grabbing;
 }
 
 .hero-safe-zone-glow {
@@ -343,6 +376,13 @@ a {
     0 24px 60px rgba(96, 165, 250, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
   outline: none;
+}
+
+.overview-interactive-shell .hero-fluid-stage,
+.overview-interactive-shell .hero-energy-core,
+.overview-interactive-shell .hero-safe-zone-glow,
+.overview-interactive-shell [data-overview-ornament="true"] {
+  pointer-events: none;
 }
 
 @keyframes heroFieldFloatOne {
