@@ -74,18 +74,10 @@ const cards = [
   },
 ];
 
-type SafeZoneEllipse = {
-  centerX: number;
-  centerY: number;
-  radiusX: number;
-  radiusY: number;
-  padding: number;
-};
-
 type SceneLayout = {
   width: number;
   height: number;
-  safeZone: SafeZoneEllipse | null;
+  safeZone: null;
 };
 
 type Disturbance = {
@@ -98,7 +90,6 @@ type Disturbance = {
 export function Hero() {
   const reducedMotion = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
   const disturbanceIdRef = useRef(0);
   const disturbanceTimeoutsRef = useRef<number[]>([]);
   const [layout, setLayout] = useState<SceneLayout>({
@@ -110,26 +101,13 @@ export function Hero() {
 
   useEffect(() => {
     const panel = panelRef.current;
-    const content = contentRef.current;
-    if (!panel || !content) return;
+    if (!panel) return;
 
     const updateLayout = () => {
-      const panelRect = panel.getBoundingClientRect();
-      const contentRect = content.getBoundingClientRect();
-      const isCompact = window.innerWidth < 1024;
-      const paddingX = isCompact ? 24 : 88;
-      const paddingY = isCompact ? 26 : 68;
-
       setLayout({
         width: panel.clientWidth,
         height: panel.clientHeight,
-        safeZone: {
-          centerX: contentRect.left - panelRect.left + contentRect.width / 2,
-          centerY: contentRect.top - panelRect.top + contentRect.height / 2,
-          radiusX: contentRect.width / 2 + paddingX,
-          radiusY: contentRect.height / 2 + paddingY,
-          padding: isCompact ? 12 : 18,
-        },
+        safeZone: null,
       });
     };
 
@@ -137,7 +115,6 @@ export function Hero() {
 
     const resizeObserver = new ResizeObserver(updateLayout);
     resizeObserver.observe(panel);
-    resizeObserver.observe(content);
     window.addEventListener("resize", updateLayout);
     const activeTimeouts = disturbanceTimeoutsRef.current;
 
@@ -210,7 +187,6 @@ export function Hero() {
             <div className="hero-fluid-grain" />
           </div>
           <HeroEnergyCore />
-          <div className="hero-safe-zone-glow" />
           <AnimatePresence>
             {disturbances.map((disturbance) => (
               <motion.div
@@ -248,7 +224,6 @@ export function Hero() {
           ))}
 
           <motion.div
-            ref={contentRef}
             className="relative z-20 mx-auto flex max-w-3xl flex-col items-center py-24 text-center sm:py-28 lg:py-32"
             initial={reducedMotion ? false : { opacity: 0, y: 30 }}
             animate={reducedMotion ? {} : { opacity: 1, y: 0 }}
