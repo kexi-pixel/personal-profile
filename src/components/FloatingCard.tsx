@@ -39,6 +39,14 @@ const accentMap = {
 
 const OUTER_MARGIN = 18;
 const CLICK_THRESHOLD = 6;
+const VELOCITY_SAMPLE_WINDOW_MS = 90;
+const MAX_VELOCITY_SAMPLES = 5;
+
+type VelocitySample = {
+  vx: number;
+  vy: number;
+  time: number;
+};
 
 function clampRect(rect: Rect, scene: SceneLayout) {
   const maxX = Math.max(OUTER_MARGIN, scene.width - rect.width - OUTER_MARGIN);
@@ -83,8 +91,8 @@ export function FloatingCard({
   const pointerLastRef = useRef({ x: 0, y: 0, time: 0 });
   const pointerStartRef = useRef({ x: 0, y: 0 });
   const totalDragDistanceRef = useRef(0);
-  const collisionCooldownRef = useRef(0);
   const disturbanceSampleRef = useRef({ x: 0, y: 0, time: 0 });
+  const velocitySamplesRef = useRef<VelocitySample[]>([]);
   const stateRef = useRef({
     x: 0,
     y: 0,
@@ -147,11 +155,12 @@ export function FloatingCard({
 
       if (!draggingRef.current) {
         const state = stateRef.current;
-        state.vx *= 0.94;
-        state.vy *= 0.94;
+        const friction = Math.pow(0.94, dt);
+        state.vx *= friction;
+        state.vy *= friction;
 
-        if (Math.abs(state.vx) < 0.006) state.vx = 0;
-        if (Math.abs(state.vy) < 0.006) state.vy = 0;
+        if (Math.abs(state.vx) < 0.004) state.vx = 0;
+        if (Math.abs(state.vy) < 0.004) state.vy = 0;
 
         const nextRect = {
           x: state.x + state.vx * 16 * dt,
@@ -160,25 +169,19 @@ export function FloatingCard({
           height: cardSizeRef.current.height,
         };
 
-        const before = { x: nextRect.x, y: nextRect.y };
         const clamped = clampRect(nextRect, scene);
 
         state.x = clamped.rect.x;
         state.y = clamped.rect.y;
 
-        if (clamped.axis === "x" && time - collisionCooldownRef.current > 120) {
-          collisionCooldownRef.current = time;
-          state.vx *= -0.28;
-          state.vy *= 0.9;
+        if (clamped.axis === "x") {
+          state.vx = -state.vx * 0.24;
+          state.vy *= 0.92;
           onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
-        } else if (clamped.axis === "y" && time - collisionCooldownRef.current > 120) {
-          collisionCooldownRef.current = time;
-          state.vy *= -0.28;
-          state.vx *= 0.9;
+        } else if (clamped.axis === "y") {
+          state.vy = -state.vy * 0.24;
+          state.vx *= 0.92;
           onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
-        } else if (before.x !== clamped.rect.x || before.y !== clamped.rect.y) {
-          state.vx *= 0.82;
-          state.vy *= 0.82;
         }
       }
 
@@ -239,6 +242,7 @@ export function FloatingCard({
           y: event.clientY,
           time: performance.now(),
         };
+        velocitySamplesRef.current = [];
         totalDragDistanceRef.current = 0;
         element.setPointerCapture(event.pointerId);
       }}
@@ -282,6 +286,10 @@ export function FloatingCard({
         state.vy = (clamped.rect.y - state.y) / deltaTime;
         state.x = clamped.rect.x;
         state.y = clamped.rect.y;
+        velocitySamplesRef.current = [
+          ...velocitySamplesRef.current.filter((sample) => now - sample.time <= VELOCITY_SAMPLE_WINDOW_MS),
+          { vx: state.vx, vy: state.vy, time: now },
+        ].slice(-MAX_VELOCITY_SAMPLES);
         element.style.transform = `translate3d(${state.x}px, ${state.y}px, 0)`;
         element.style.zIndex = "9";
         pointerLastRef.current = {
@@ -316,10 +324,32 @@ export function FloatingCard({
         setIsDragging(false);
         cardRef.current?.releasePointerCapture(event.pointerId);
 
-        stateRef.current.vx *= 11;
-        stateRef.current.vy *= 11;
-        stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 0.96), -0.96);
-        stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 0.96), -0.96);
+        const recentSamples = velocitySamplesRef.current.filter(
+          (sample) => event.timeStamp - sample.time <= VELOCITY_SAMPLE_WINDOW_MS,
+        );
+
+        if (recentSamples.length > 0) {
+          let totalWeight = 0;
+          let weightedVx = 0;
+          let weightedVy = 0;
+
+          for (let index = 0; index < recentSamples.length; index += 1) {
+            const weight = index + 1;
+            totalWeight += weight;
+            weightedVx += recentSamples[index].vx * weight;
+            weightedVy += recentSamples[index].vy * weight;
+          }
+
+          stateRef.current.vx = weightedVx / totalWeight;
+          stateRef.current.vy = weightedVy / totalWeight;
+        } else {
+          stateRef.current.vx = 0;
+          stateRef.current.vy = 0;
+        }
+
+        stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 0.6), -0.6);
+        stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 0.6), -0.6);
+        velocitySamplesRef.current = [];
 
         if (!suppressClickRef.current && !dragMovedRef.current) {
           onNavigate();
@@ -330,11 +360,13 @@ export function FloatingCard({
         pointerIdRef.current = null;
         dragMovedRef.current = false;
         suppressClickRef.current = false;
+        velocitySamplesRef.current = [];
         setIsDragging(false);
       }}
       onLostPointerCapture={() => {
         draggingRef.current = false;
         pointerIdRef.current = null;
+        velocitySamplesRef.current = [];
         setIsDragging(false);
       }}
       onKeyDown={(event) => {
