@@ -22,6 +22,14 @@ export function Navbar() {
     let frameId = 0;
 
     const updateActiveSection = () => {
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const pageBottom = document.documentElement.scrollHeight;
+
+      if (pageBottom - scrollBottom <= 24) {
+        setActiveSection((current) => (current === "contact" ? current : "contact"));
+        return;
+      }
+
       const viewportProbe = window.innerHeight * 0.34;
       let nextActiveSection: SectionId = sections[0].id;
       let nearestDistance = Number.POSITIVE_INFINITY;
