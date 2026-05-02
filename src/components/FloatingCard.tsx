@@ -84,6 +84,7 @@ export function FloatingCard({
   const pointerStartRef = useRef({ x: 0, y: 0 });
   const totalDragDistanceRef = useRef(0);
   const collisionCooldownRef = useRef(0);
+  const disturbanceSampleRef = useRef({ x: 0, y: 0, time: 0 });
   const stateRef = useRef({
     x: 0,
     y: 0,
@@ -233,14 +234,20 @@ export function FloatingCard({
           y: event.clientY,
           time: performance.now(),
         };
+        disturbanceSampleRef.current = {
+          x: event.clientX,
+          y: event.clientY,
+          time: performance.now(),
+        };
         totalDragDistanceRef.current = 0;
         element.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
         if (!draggingRef.current || pointerIdRef.current !== event.pointerId) return;
 
-        const host = cardRef.current?.parentElement;
-        if (!host) return;
+        const element = cardRef.current;
+        const host = element?.parentElement;
+        if (!element || !host) return;
 
         const hostRect = host.getBoundingClientRect();
         const nextRect = {
@@ -275,17 +282,30 @@ export function FloatingCard({
         state.vy = (clamped.rect.y - state.y) / deltaTime;
         state.x = clamped.rect.x;
         state.y = clamped.rect.y;
+        element.style.transform = `translate3d(${state.x}px, ${state.y}px, 0)`;
+        element.style.zIndex = "9";
         pointerLastRef.current = {
           x: event.clientX,
           y: event.clientY,
           time: now,
         };
 
-        onDisturbance(
-          state.x + cardSizeRef.current.width / 2,
-          state.y + cardSizeRef.current.height / 2,
-          0.08,
+        const disturbanceDelta = Math.hypot(
+          event.clientX - disturbanceSampleRef.current.x,
+          event.clientY - disturbanceSampleRef.current.y,
         );
+        if (now - disturbanceSampleRef.current.time > 42 || disturbanceDelta > 18) {
+          disturbanceSampleRef.current = {
+            x: event.clientX,
+            y: event.clientY,
+            time: now,
+          };
+          onDisturbance(
+            state.x + cardSizeRef.current.width / 2,
+            state.y + cardSizeRef.current.height / 2,
+            0.07,
+          );
+        }
       }}
       onPointerUp={(event) => {
         if (pointerIdRef.current !== event.pointerId) return;
@@ -298,8 +318,8 @@ export function FloatingCard({
 
         stateRef.current.vx *= 11;
         stateRef.current.vy *= 11;
-        stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 1.2), -1.2);
-        stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 1.2), -1.2);
+        stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 0.96), -0.96);
+        stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 0.96), -0.96);
 
         if (!suppressClickRef.current && !dragMovedRef.current) {
           onNavigate();
