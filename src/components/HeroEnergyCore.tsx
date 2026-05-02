@@ -79,6 +79,48 @@ export function HeroEnergyCore() {
       context.restore();
     };
 
+    const drawStream = (
+      cx: number,
+      cy: number,
+      width: number,
+      height: number,
+      time: number,
+      rotation: number,
+      alpha: number,
+      colors: [string, string, string],
+    ) => {
+      const points = reducedMotion ? 56 : 84;
+      context.save();
+      context.translate(cx, cy);
+      context.rotate(rotation);
+      context.beginPath();
+
+      for (let index = 0; index <= points; index += 1) {
+        const t = index / points;
+        const x = (t - 0.5) * width;
+        const sine =
+          Math.sin(t * Math.PI * 2.2 + time * 1.2) * height * 0.22 +
+          Math.sin(t * Math.PI * 6.1 - time * 0.65) * height * 0.08;
+        const y = sine + Math.cos(t * Math.PI * 3.2 + time * 0.55) * height * 0.06;
+
+        if (index === 0) context.moveTo(x, y);
+        else context.lineTo(x, y);
+      }
+
+      const gradient = context.createLinearGradient(-width / 2, 0, width / 2, 0);
+      gradient.addColorStop(0, colors[0]);
+      gradient.addColorStop(0.5, colors[1]);
+      gradient.addColorStop(1, colors[2]);
+
+      context.strokeStyle = gradient;
+      context.globalAlpha = alpha;
+      context.lineWidth = 1.2;
+      context.shadowBlur = 18;
+      context.shadowColor = "rgba(125,211,252,0.16)";
+      context.stroke();
+      context.restore();
+    };
+
     let frame = 0;
     let rafId = 0;
 
@@ -92,56 +134,72 @@ export function HeroEnergyCore() {
 
       context.clearRect(0, 0, width, height);
 
-      const centerX = width * 0.56 + pointer.x * 16;
-      const centerY = height * 0.5 + pointer.y * 10;
-      const baseRadius = Math.min(width, height) * (width < 768 ? 0.14 : 0.17);
+      const centerX = width * 0.56 + pointer.x * 18;
+      const centerY = height * 0.5 + pointer.y * 12;
+      const baseRadius = Math.min(width, height) * (width < 768 ? 0.16 : 0.19);
       const breath = 1 + Math.sin(frame * 1.8) * 0.028;
 
       const aura = context.createRadialGradient(
         centerX,
         centerY,
-        baseRadius * 0.24,
+        baseRadius * 0.18,
         centerX,
         centerY,
-        baseRadius * 1.46,
+        baseRadius * 1.7,
       );
-      aura.addColorStop(0, "rgba(255,255,255,0.14)");
-      aura.addColorStop(0.35, "rgba(224,242,254,0.12)");
-      aura.addColorStop(0.72, "rgba(191,219,254,0.08)");
+      aura.addColorStop(0, "rgba(255,255,255,0.12)");
+      aura.addColorStop(0.32, "rgba(224,242,254,0.14)");
+      aura.addColorStop(0.62, "rgba(147,197,253,0.08)");
       aura.addColorStop(1, "rgba(255,255,255,0)");
 
       context.fillStyle = aura;
       context.beginPath();
-      context.arc(centerX, centerY, baseRadius * 1.46, 0, Math.PI * 2);
+      context.arc(centerX, centerY, baseRadius * 1.7, 0, Math.PI * 2);
       context.fill();
 
-      const innerGlow = context.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        baseRadius * 0.9,
-      );
-      innerGlow.addColorStop(0, "rgba(255,255,255,0.16)");
-      innerGlow.addColorStop(0.4, "rgba(219,234,254,0.1)");
+      const innerGlow = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius * 0.96);
+      innerGlow.addColorStop(0, "rgba(255,255,255,0.18)");
+      innerGlow.addColorStop(0.28, "rgba(219,234,254,0.12)");
+      innerGlow.addColorStop(0.56, "rgba(186,230,253,0.08)");
       innerGlow.addColorStop(1, "rgba(255,255,255,0)");
 
       context.fillStyle = innerGlow;
       context.beginPath();
-      context.arc(centerX, centerY, baseRadius * 0.9, 0, Math.PI * 2);
+      context.arc(centerX, centerY, baseRadius * 0.96, 0, Math.PI * 2);
       context.fill();
+
+      drawStream(
+        centerX - baseRadius * 0.36,
+        centerY - baseRadius * 0.18,
+        baseRadius * 2.25,
+        baseRadius * 0.82,
+        frame,
+        -0.16,
+        0.42,
+        ["rgba(255,255,255,0)", "rgba(186,230,253,0.6)", "rgba(255,255,255,0)"],
+      );
+
+      drawStream(
+        centerX + baseRadius * 0.26,
+        centerY + baseRadius * 0.22,
+        baseRadius * 2.05,
+        baseRadius * 0.72,
+        frame + 1.7,
+        0.2,
+        0.34,
+        ["rgba(255,255,255,0)", "rgba(191,219,254,0.52)", "rgba(255,255,255,0)"],
+      );
 
       drawLoop(
         centerX,
         centerY,
         baseRadius * breath,
         frame,
-        baseRadius * 0.085,
+        baseRadius * 0.095,
         frame * 0.08,
-        1.35,
-        ["rgba(255,255,255,0.14)", "rgba(224,242,254,0.52)", "rgba(191,219,254,0.16)"],
-        0.72,
+        1.4,
+        ["rgba(255,255,255,0.16)", "rgba(224,242,254,0.56)", "rgba(191,219,254,0.18)"],
+        0.76,
       );
 
       drawLoop(
@@ -149,11 +207,11 @@ export function HeroEnergyCore() {
         centerY,
         baseRadius * 0.78 * (1 + Math.sin(frame * 1.2 + 1.8) * 0.02),
         frame + 1.4,
-        baseRadius * 0.06,
+        baseRadius * 0.072,
         -frame * 0.06,
-        0.95,
-        ["rgba(255,255,255,0.08)", "rgba(186,230,253,0.38)", "rgba(255,255,255,0.1)"],
-        0.56,
+        1.02,
+        ["rgba(255,255,255,0.1)", "rgba(186,230,253,0.44)", "rgba(255,255,255,0.12)"],
+        0.62,
       );
 
       drawLoop(
@@ -161,11 +219,11 @@ export function HeroEnergyCore() {
         centerY,
         baseRadius * 1.12 * (1 + Math.cos(frame * 0.9 + 0.8) * 0.018),
         frame + 3.1,
-        baseRadius * 0.042,
+        baseRadius * 0.05,
         frame * 0.035,
-        0.8,
-        ["rgba(255,255,255,0.04)", "rgba(219,234,254,0.22)", "rgba(255,255,255,0.03)"],
-        0.44,
+        0.9,
+        ["rgba(255,255,255,0.05)", "rgba(219,234,254,0.28)", "rgba(255,255,255,0.04)"],
+        0.48,
       );
 
       if (!reducedMotion) {
