@@ -264,18 +264,24 @@ export function Hero() {
             </h1>
 
             <div className="mt-10 space-y-4">
-              <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
-                连接市场、运营与产品的复合型候选人
-              </p>
-              <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
-                Marketing Growth &amp; Operations Strategy Candidate
-              </p>
+              <div className="hero-copy-glass hero-copy-glass--headline">
+                <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
+                  连接市场、运营与产品的复合型候选人
+                </p>
+              </div>
+              <div className="hero-copy-glass hero-copy-glass--subtitle">
+                <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
+                  Marketing Growth &amp; Operations Strategy Candidate
+                </p>
+              </div>
             </div>
 
-            <p className="mt-8 max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
-              具备字节跳动与宝洁市场实习经历，关注增长运营、用户洞察与数据驱动决策，
-              能够连接市场、运营与产品相关业务场景。
-            </p>
+            <div className="hero-copy-glass hero-copy-glass--description mt-8">
+              <p className="max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
+                具备字节跳动与宝洁市场实习经历，关注增长运营、用户洞察与数据驱动决策，
+                能够连接市场、运营与产品相关业务场景。
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
