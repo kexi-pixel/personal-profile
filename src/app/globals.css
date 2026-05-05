@@ -409,14 +409,17 @@ a {
 }
 
 .hero-copy-glass--description {
-  width: fit-content;
-  padding: 14px 24px;
+  display: inline-block;
+  width: auto;
+  padding: 14px 18px;
   border-radius: 28px;
-  max-width: min(640px, calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
 }
 
 .hero-copy-glass--description p {
-  max-width: none;
+  width: 34em;
+  max-width: 100%;
+  margin: 0;
 }
 
 @keyframes heroFieldFloatOne {
