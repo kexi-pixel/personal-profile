@@ -39,8 +39,15 @@ const accentMap = {
 
 const OUTER_MARGIN = 18;
 const CLICK_THRESHOLD = 6;
-const VELOCITY_SAMPLE_WINDOW_MS = 90;
-const MAX_VELOCITY_SAMPLES = 5;
+const VELOCITY_SAMPLE_WINDOW_MS = 72;
+const MAX_VELOCITY_SAMPLES = 4;
+const MAX_RELEASE_VELOCITY = 0.22;
+const FRICTION_BASE = 0.82;
+const VELOCITY_STOP_THRESHOLD = 0.003;
+const BOUNCE_DAMPING = 0.16;
+const TANGENTIAL_DAMPING = 0.82;
+const DISTURBANCE_INTERVAL_MS = 64;
+const DISTURBANCE_DISTANCE_PX = 24;
 
 type VelocitySample = {
   vx: number;
@@ -93,6 +100,7 @@ export function FloatingCard({
   const totalDragDistanceRef = useRef(0);
   const disturbanceSampleRef = useRef({ x: 0, y: 0, time: 0 });
   const velocitySamplesRef = useRef<VelocitySample[]>([]);
+  const reducedInteractionRef = useRef(false);
   const stateRef = useRef({
     x: 0,
     y: 0,
@@ -100,6 +108,7 @@ export function FloatingCard({
     vy: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
+  const [isReducedInteraction, setIsReducedInteraction] = useState(false);
 
   useEffect(() => {
     const element = cardRef.current;
@@ -116,6 +125,30 @@ export function FloatingCard({
     const observer = new ResizeObserver(updateSize);
     observer.observe(element);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px), (pointer: coarse)");
+
+    const syncReducedInteraction = () => {
+      reducedInteractionRef.current = mediaQuery.matches;
+      setIsReducedInteraction(mediaQuery.matches);
+
+      if (mediaQuery.matches) {
+        draggingRef.current = false;
+        pointerIdRef.current = null;
+        velocitySamplesRef.current = [];
+        stateRef.current.vx = 0;
+        stateRef.current.vy = 0;
+      }
+    };
+
+    syncReducedInteraction();
+    mediaQuery.addEventListener("change", syncReducedInteraction);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncReducedInteraction);
+    };
   }, []);
 
   useEffect(() => {
@@ -155,12 +188,12 @@ export function FloatingCard({
 
       if (!draggingRef.current) {
         const state = stateRef.current;
-        const friction = Math.pow(0.94, dt);
+        const friction = Math.pow(FRICTION_BASE, dt);
         state.vx *= friction;
         state.vy *= friction;
 
-        if (Math.abs(state.vx) < 0.004) state.vx = 0;
-        if (Math.abs(state.vy) < 0.004) state.vy = 0;
+        if (Math.abs(state.vx) < VELOCITY_STOP_THRESHOLD) state.vx = 0;
+        if (Math.abs(state.vy) < VELOCITY_STOP_THRESHOLD) state.vy = 0;
 
         const nextRect = {
           x: state.x + state.vx * 16 * dt,
@@ -175,13 +208,13 @@ export function FloatingCard({
         state.y = clamped.rect.y;
 
         if (clamped.axis === "x") {
-          state.vx = -state.vx * 0.24;
-          state.vy *= 0.92;
-          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
+          state.vx = -state.vx * BOUNCE_DAMPING;
+          state.vy *= TANGENTIAL_DAMPING;
+          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.1);
         } else if (clamped.axis === "y") {
-          state.vy = -state.vy * 0.24;
-          state.vx *= 0.92;
-          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.16);
+          state.vy = -state.vy * BOUNCE_DAMPING;
+          state.vx *= TANGENTIAL_DAMPING;
+          onDisturbance(state.x + nextRect.width / 2, state.y + nextRect.height / 2, 0.1);
         }
       }
 
@@ -207,13 +240,13 @@ export function FloatingCard({
         "floating-card absolute left-0 top-0 z-[6] w-[232px] rounded-[28px] border bg-gradient-to-br px-5 py-4 text-left backdrop-blur-md transition-[box-shadow,transform,background-color,border-color] duration-300 will-change-transform xl:w-[248px]",
         accentMap[accent],
         desktopOnly ? "hidden xl:block" : "block",
-        isDragging ? "cursor-grabbing" : "cursor-grab",
+        !isReducedInteraction && isDragging ? "cursor-grabbing" : !isReducedInteraction ? "cursor-grab" : "",
         isDragging ? "shadow-[0_24px_58px_rgba(59,130,246,0.18)]" : "",
         scene.width ? "opacity-100" : "opacity-0",
       ].join(" ")}
       onPointerDown={(event) => {
         const element = cardRef.current;
-        if (!element || !event.isPrimary || event.button !== 0) return;
+        if (!element || !event.isPrimary || event.button !== 0 || reducedInteractionRef.current) return;
 
         event.preventDefault();
 
@@ -302,7 +335,10 @@ export function FloatingCard({
           event.clientX - disturbanceSampleRef.current.x,
           event.clientY - disturbanceSampleRef.current.y,
         );
-        if (now - disturbanceSampleRef.current.time > 42 || disturbanceDelta > 18) {
+        if (
+          now - disturbanceSampleRef.current.time > DISTURBANCE_INTERVAL_MS ||
+          disturbanceDelta > DISTURBANCE_DISTANCE_PX
+        ) {
           disturbanceSampleRef.current = {
             x: event.clientX,
             y: event.clientY,
@@ -347,8 +383,14 @@ export function FloatingCard({
           stateRef.current.vy = 0;
         }
 
-        stateRef.current.vx = Math.max(Math.min(stateRef.current.vx, 0.6), -0.6);
-        stateRef.current.vy = Math.max(Math.min(stateRef.current.vy, 0.6), -0.6);
+        stateRef.current.vx = Math.max(
+          Math.min(stateRef.current.vx, MAX_RELEASE_VELOCITY),
+          -MAX_RELEASE_VELOCITY,
+        );
+        stateRef.current.vy = Math.max(
+          Math.min(stateRef.current.vy, MAX_RELEASE_VELOCITY),
+          -MAX_RELEASE_VELOCITY,
+        );
         velocitySamplesRef.current = [];
 
         if (!suppressClickRef.current && !dragMovedRef.current) {
