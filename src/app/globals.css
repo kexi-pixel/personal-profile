@@ -409,9 +409,10 @@ a {
 }
 
 .hero-copy-glass--description {
+  width: fit-content;
   padding: 14px 24px;
   border-radius: 28px;
-  max-width: min(720px, calc(100vw - 48px));
+  max-width: min(640px, calc(100vw - 48px));
 }
 
 .hero-copy-glass--description p {
