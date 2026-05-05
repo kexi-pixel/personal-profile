@@ -7,19 +7,27 @@ import { useEffect, useState } from "react";
 const themeMap = {
   bytedance: {
     shell:
-      "border-sky-300/18 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(96,165,250,0.16),transparent_28%),linear-gradient(135deg,rgba(20,43,74,0.98),rgba(33,58,99,0.94),rgba(20,28,48,0.92))] text-white",
-    panel: "border-white/12 bg-white/6",
-    muted: "text-slate-300",
-    chip: "border-cyan-300/24 bg-white/8 font-mono text-[11px] uppercase tracking-[0.22em] text-cyan-100",
-    result: "border-cyan-300/18 bg-white/8",
+      "experience-shell border-white/38 bg-[radial-gradient(circle_at_18%_16%,rgba(191,219,254,0.28),transparent_30%),radial-gradient(circle_at_82%_24%,rgba(196,181,253,0.16),transparent_32%),linear-gradient(140deg,rgba(92,116,144,0.82),rgba(74,97,126,0.76),rgba(52,72,96,0.8))] text-slate-50",
+    panel:
+      "experience-panel border-white/34 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.1))] shadow-[0_24px_60px_rgba(35,65,95,0.14),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[18px]",
+    muted: "text-slate-200/92",
+    eyebrow: "text-slate-200/78",
+    chip:
+      "experience-chip border-white/34 bg-[linear-gradient(180deg,rgba(248,251,255,0.18),rgba(229,238,248,0.1))] font-mono text-[11px] uppercase tracking-[0.22em] text-cyan-50 shadow-[0_10px_24px_rgba(35,65,95,0.12)]",
+    result:
+      "experience-metric-card border-white/40 bg-[linear-gradient(180deg,rgba(245,250,255,0.22),rgba(223,235,247,0.14))] shadow-[0_16px_36px_rgba(35,65,95,0.12),inset_0_1px_0_rgba(255,255,255,0.22)] backdrop-blur-[16px]",
   },
   pg: {
     shell:
-      "border-sky-200/80 bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.24),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(191,219,254,0.26),transparent_28%),linear-gradient(180deg,rgba(248,250,252,0.96),rgba(239,246,255,0.94))] text-slate-950",
-    panel: "border-sky-100 bg-white/76",
-    muted: "text-slate-600",
-    chip: "border-sky-200 bg-white/86 font-mono text-[11px] uppercase tracking-[0.2em] text-slate-700",
-    result: "border-sky-100 bg-white/76",
+      "experience-shell border-white/62 bg-[radial-gradient(circle_at_16%_14%,rgba(186,230,253,0.28),transparent_28%),radial-gradient(circle_at_84%_22%,rgba(216,180,254,0.12),transparent_30%),linear-gradient(145deg,rgba(229,236,242,0.96),rgba(201,214,226,0.92),rgba(184,202,219,0.9))] text-slate-900",
+    panel:
+      "experience-panel border-white/56 bg-[linear-gradient(180deg,rgba(255,255,255,0.34),rgba(245,249,253,0.22))] shadow-[0_24px_60px_rgba(73,96,124,0.1),inset_0_1px_0_rgba(255,255,255,0.32)] backdrop-blur-[18px]",
+    muted: "text-slate-700/92",
+    eyebrow: "text-slate-500/88",
+    chip:
+      "experience-chip border-white/58 bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(240,246,251,0.34))] font-mono text-[11px] uppercase tracking-[0.2em] text-slate-700 shadow-[0_10px_24px_rgba(73,96,124,0.08)]",
+    result:
+      "experience-metric-card border-white/62 bg-[linear-gradient(180deg,rgba(248,252,255,0.46),rgba(234,242,248,0.3))] shadow-[0_16px_36px_rgba(73,96,124,0.08),inset_0_1px_0_rgba(255,255,255,0.34)] backdrop-blur-[16px]",
   },
 };
 
@@ -45,7 +53,7 @@ export function Experience() {
   }, []);
 
   return (
-    <section id="experience" className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <section id="experience" className="experience-section px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <SectionReveal className="mx-auto flex max-w-7xl flex-col gap-10">
         <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-slate-500">
           Experience
@@ -60,9 +68,9 @@ export function Experience() {
             return (
               <SectionReveal
                 key={experience.company}
-                className={`overflow-hidden rounded-[36px] border p-6 shadow-[0_24px_90px_rgba(15,23,42,0.08)] transition-[box-shadow,border-color] duration-500 sm:p-8 lg:p-10 ${
+                className={`experience-card overflow-hidden rounded-[36px] border p-6 shadow-[0_24px_90px_rgba(15,23,42,0.08)] transition-[box-shadow,border-color,background-color] duration-500 hover:shadow-[0_32px_90px_rgba(72,98,128,0.16)] sm:p-8 lg:p-10 ${
                   highlightedId === anchorId
-                    ? "ring-1 ring-sky-200 shadow-[0_0_0_1px_rgba(186,230,253,0.6),0_28px_100px_rgba(125,211,252,0.14)]"
+                    ? "ring-1 ring-white/45 shadow-[0_0_0_1px_rgba(226,236,248,0.72),0_28px_100px_rgba(148,163,184,0.16)]"
                     : ""
                 } ${theme.shell}`}
                 delay={index * 0.08}
@@ -71,7 +79,9 @@ export function Experience() {
                 <div className="grid gap-8 lg:grid-cols-[1.02fr_1.18fr]">
                   <div className="space-y-8 lg:pr-4">
                     <div className="space-y-5">
-                      <p className={`font-mono text-[11px] uppercase tracking-[0.3em] ${theme.muted}`}>
+                      <p
+                        className={`experience-eyebrow font-mono text-[11px] uppercase tracking-[0.3em] ${theme.eyebrow}`}
+                      >
                         {experience.companyEn}
                       </p>
                       <div className="space-y-4">
@@ -84,8 +94,12 @@ export function Experience() {
                       </div>
                     </div>
 
-                    <div className={`rounded-[28px] border p-6 ${theme.panel}`}>
-                      <p className={`font-mono text-[11px] uppercase tracking-[0.28em] ${theme.muted}`}>
+                    <div
+                      className={`experience-panel rounded-[28px] border p-6 transition-[background-color,border-color,box-shadow] duration-300 hover:border-white/50 hover:bg-white/20 ${theme.panel}`}
+                    >
+                      <p
+                        className={`experience-eyebrow font-mono text-[11px] uppercase tracking-[0.28em] ${theme.eyebrow}`}
+                      >
                         Project
                       </p>
                       <h4 className="mt-4 text-[2rem] font-semibold tracking-[-0.04em]">
@@ -96,8 +110,12 @@ export function Experience() {
                       </p>
                     </div>
 
-                    <div className={`rounded-[28px] border p-6 ${theme.panel}`}>
-                      <p className={`font-mono text-[11px] uppercase tracking-[0.28em] ${theme.muted}`}>
+                    <div
+                      className={`experience-panel rounded-[28px] border p-6 transition-[background-color,border-color,box-shadow] duration-300 hover:border-white/50 hover:bg-white/20 ${theme.panel}`}
+                    >
+                      <p
+                        className={`experience-eyebrow font-mono text-[11px] uppercase tracking-[0.28em] ${theme.eyebrow}`}
+                      >
                         My Role
                       </p>
                       <p className={`mt-4 text-base leading-8 ${theme.muted}`}>
@@ -107,8 +125,12 @@ export function Experience() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className={`rounded-[28px] border p-6 ${theme.panel}`}>
-                      <p className={`font-mono text-[11px] uppercase tracking-[0.28em] ${theme.muted}`}>
+                    <div
+                      className={`experience-panel rounded-[28px] border p-6 transition-[background-color,border-color,box-shadow] duration-300 hover:border-white/50 hover:bg-white/20 ${theme.panel}`}
+                    >
+                      <p
+                        className={`experience-eyebrow font-mono text-[11px] uppercase tracking-[0.28em] ${theme.eyebrow}`}
+                      >
                         Key Actions
                       </p>
                       <ul className={`mt-5 space-y-4 text-base leading-8 ${theme.muted}`}>
@@ -125,7 +147,7 @@ export function Experience() {
                       {experience.results.map((result) => (
                         <div
                           key={result}
-                          className={`rounded-[24px] border p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] ${theme.result}`}
+                          className={`experience-metric-card rounded-[24px] border p-5 transition-[background-color,border-color,box-shadow] duration-300 hover:border-white/68 hover:shadow-[0_20px_44px_rgba(73,96,124,0.14)] ${theme.result}`}
                         >
                           <p className={`text-base leading-8 ${theme.muted}`}>{result}</p>
                         </div>
