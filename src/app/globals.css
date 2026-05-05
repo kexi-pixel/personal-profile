@@ -385,6 +385,39 @@ a {
   pointer-events: none;
 }
 
+.hero-copy-glass {
+  width: fit-content;
+  max-width: min(760px, calc(100vw - 48px));
+  margin-inline: auto;
+  border-radius: 999px;
+  border: 1px solid rgba(203, 229, 255, 0.72);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(244, 250, 255, 0.38));
+  box-shadow:
+    0 12px 28px rgba(90, 135, 180, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.hero-copy-glass--headline {
+  padding: 12px 26px;
+}
+
+.hero-copy-glass--subtitle {
+  padding: 9px 22px;
+}
+
+.hero-copy-glass--description {
+  padding: 14px 24px;
+  border-radius: 28px;
+  max-width: min(720px, calc(100vw - 48px));
+}
+
+.hero-copy-glass--description p {
+  max-width: none;
+}
+
 @keyframes heroFieldFloatOne {
   0%,
   100% {
@@ -591,6 +624,25 @@ a {
     width: min(88vw, 480px);
     height: min(64vw, 300px);
     opacity: 0.5;
+  }
+
+  .hero-copy-glass {
+    max-width: calc(100vw - 40px);
+  }
+
+  .hero-copy-glass--headline {
+    padding: 11px 18px;
+    border-radius: 30px;
+  }
+
+  .hero-copy-glass--subtitle {
+    padding: 9px 16px;
+    border-radius: 24px;
+  }
+
+  .hero-copy-glass--description {
+    padding: 14px 18px;
+    max-width: calc(100vw - 40px);
   }
 }
 
