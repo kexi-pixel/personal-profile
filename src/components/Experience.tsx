@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 const themeMap = {
   bytedance: {
     shell:
-      "experience-shell border-white/38 bg-[radial-gradient(circle_at_18%_16%,rgba(191,219,254,0.28),transparent_30%),radial-gradient(circle_at_82%_24%,rgba(196,181,253,0.16),transparent_32%),linear-gradient(140deg,rgba(92,116,144,0.82),rgba(74,97,126,0.76),rgba(52,72,96,0.8))] text-slate-50",
+      "experience-shell border-white/38 bg-[radial-gradient(circle_at_18%_14%,rgba(191,219,254,0.18),transparent_27%),radial-gradient(circle_at_80%_20%,rgba(196,181,253,0.1),transparent_30%),radial-gradient(circle_at_52%_100%,rgba(148,163,184,0.12),transparent_42%),linear-gradient(145deg,rgba(102,122,145,0.7),rgba(82,103,127,0.62),rgba(68,87,111,0.68))] text-slate-50",
     panel:
       "experience-panel border-white/34 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.1))] shadow-[0_24px_60px_rgba(35,65,95,0.14),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[18px]",
     muted: "text-slate-200/92",
@@ -19,7 +19,7 @@ const themeMap = {
   },
   pg: {
     shell:
-      "experience-shell border-white/62 bg-[radial-gradient(circle_at_16%_14%,rgba(186,230,253,0.28),transparent_28%),radial-gradient(circle_at_84%_22%,rgba(216,180,254,0.12),transparent_30%),linear-gradient(145deg,rgba(229,236,242,0.96),rgba(201,214,226,0.92),rgba(184,202,219,0.9))] text-slate-900",
+      "experience-shell border-white/62 bg-[radial-gradient(circle_at_16%_14%,rgba(186,230,253,0.16),transparent_24%),radial-gradient(circle_at_86%_20%,rgba(216,180,254,0.08),transparent_28%),radial-gradient(circle_at_48%_100%,rgba(191,219,254,0.14),transparent_44%),linear-gradient(150deg,rgba(233,239,244,0.94),rgba(214,223,232,0.9),rgba(196,210,222,0.86))] text-slate-900",
     panel:
       "experience-panel border-white/56 bg-[linear-gradient(180deg,rgba(255,255,255,0.34),rgba(245,249,253,0.22))] shadow-[0_24px_60px_rgba(73,96,124,0.1),inset_0_1px_0_rgba(255,255,255,0.32)] backdrop-blur-[18px]",
     muted: "text-slate-700/92",
@@ -53,7 +53,10 @@ export function Experience() {
   }, []);
 
   return (
-    <section id="experience" className="experience-section px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <section
+      id="experience"
+      className="experience-section bg-[radial-gradient(circle_at_16%_14%,rgba(186,230,253,0.16),transparent_24%),radial-gradient(circle_at_84%_18%,rgba(196,181,253,0.09),transparent_26%),radial-gradient(circle_at_50%_100%,rgba(191,219,254,0.14),transparent_44%),linear-gradient(180deg,rgba(241,246,251,0.74),rgba(227,235,243,0.88),rgba(236,242,247,0.78))] px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+    >
       <SectionReveal className="mx-auto flex max-w-7xl flex-col gap-10">
         <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-slate-500">
           Experience
