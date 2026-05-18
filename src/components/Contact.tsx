@@ -1,7 +1,7 @@
 import { SectionReveal } from "@/components/SectionReveal";
 
 export function Contact() {
-  const resumePath = "/public/陈京岳-中文简历-影石.pdf";
+  const resumePath = "/陈京岳-中文简历-影石.pdf";
 
   return (
     <section id="contact" className="px-4 pb-20 pt-16 sm:px-6 lg:px-8 lg:pb-28 lg:pt-24">
