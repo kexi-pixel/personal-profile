@@ -9,7 +9,7 @@ export function Contact() {
             Contact
           </p>
           <h2 className="mx-auto max-w-4xl text-4xl font-semibold leading-[1.15] tracking-[-0.06em] text-slate-950 sm:text-5xl [text-wrap:balance]">
-            我希望在 GTM、整合营销策略与品牌增长相关岗位中，把用户洞察、触点策略、内容表达与数据复盘连接起来，参与能够落到业务结果的项目。
+            我希望在 GTM 全链路增长与品牌市场岗位中，把市场洞察、经营目标、渠道增长、跨部门上线与数据复盘连接起来，参与能够落到业务结果的项目。
           </h2>
           <p className="text-base text-slate-500 sm:text-lg">
             +86 193-5856-3057 ｜ chenjingyue202509@163.com
