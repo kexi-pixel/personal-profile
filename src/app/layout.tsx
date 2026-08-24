@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "陈京岳 | Career Profile",
+  title: "陈京岳 | GTM & Integrated Marketing Profile",
   description:
-    "陈京岳 / Jingyue Chen 的个人求职展示网页，聚焦市场、运营与产品相关岗位。",
+    "陈京岳 / Jingyue Chen 的个人求职展示网页，聚焦 GTM、整合营销策略、品牌增长与数据驱动运营。",
 };
 
 export default function RootLayout({
