@@ -54,8 +54,7 @@ export function Experience() {
         <div className="space-y-8">
           {featuredExperiences.map((experience, index) => {
             const theme = themeMap[experience.theme];
-            const anchorId =
-              experience.theme === "bytedance" ? "experience-bytedance" : "experience-pg";
+            const anchorId = experience.anchorId;
 
             return (
               <SectionReveal
