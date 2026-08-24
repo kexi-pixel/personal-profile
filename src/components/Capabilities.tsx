@@ -14,7 +14,7 @@ export function Capabilities() {
             Capabilities
           </p>
           <h2 className="text-3xl font-semibold tracking-[-0.05em] text-slate-950 sm:text-4xl lg:text-[2.7rem]">
-            能力结构：业务理解 × 数据分析 × AI 工作流
+            能力结构：GTM 策略 × 品牌增长 × 数据与 AI
           </h2>
         </div>
 
@@ -54,8 +54,8 @@ export function Capabilities() {
                 Data &amp; AI-Enhanced Workflow
               </h3>
               <p className="mt-4 text-sm leading-7 text-slate-600">
-                熟悉 SQL、SPSS、R 及基础编程方法，能够结合营销业务场景完成数据整理、效果复盘与洞察提炼；同时掌握
-                Codex、Claude Code 等 AI 工具，能够将 AI 辅助编码、网页搭建、内容生产与分析流程优化融入日常工作流，提升分析、执行与表达效率。
+                熟悉 SQL、SPSS、Python、R，能够结合营销场景完成数据整理、基础建模、效果复盘与洞察提炼；同时使用
+                Codex、ChatGPT、Gemini、Claude Code 支持信息整合、研究分析、内容撰写与任务协同，提升策略与执行效率。
               </p>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
