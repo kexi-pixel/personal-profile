@@ -9,10 +9,10 @@ export function Contact() {
             Contact
           </p>
           <h2 className="mx-auto max-w-4xl text-4xl font-semibold leading-[1.15] tracking-[-0.06em] text-slate-950 sm:text-5xl [text-wrap:balance]">
-            我希望在市场、运营与产品相关岗位中，持续把用户洞察、增长策略与数据分析能力结合起来，参与更有业务价值的项目。
+            我希望在 GTM、整合营销策略与品牌增长相关岗位中，把用户洞察、触点策略、内容表达与数据复盘连接起来，参与能够落到业务结果的项目。
           </h2>
           <p className="text-base text-slate-500 sm:text-lg">
-            chenjingyue202509@163.com
+            +86 193-5856-3057 ｜ chenjingyue202509@163.com
           </p>
         </div>
       </SectionReveal>
