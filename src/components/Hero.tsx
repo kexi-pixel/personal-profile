@@ -8,10 +8,10 @@ import { HeroEnergyCore } from "@/components/HeroEnergyCore";
 const cards = [
   {
     id: "overview-bytedance",
-    title: "ByteDance｜抖音电商双十一节盟计划",
-    subtitle: "Platform Growth",
-    detail: "参与节盟全流程运营，连接站外曝光、抖音搜索与站内转化链路。",
-    metric: "Big Tech Marketing Experience",
+    title: "ByteDance｜站外整合营销策略",
+    subtitle: "Integrated Marketing",
+    detail: "围绕地标、交通线、梯媒与内容平台，搭建曝光触达至转化复盘链路。",
+    metric: "GTM Touchpoint Strategy",
     accent: "cyan" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
@@ -19,10 +19,10 @@ const cards = [
   },
   {
     id: "overview-pg",
-    title: "P&G｜618 全域营销与奥运直播专场",
-    subtitle: "Brand Marketing",
-    detail: "围绕 618 节点与奥运场景，参与全平台营销分析与直播玩法设计。",
-    metric: "Growth Operations Strategy",
+    title: "P&G｜品牌增长与直播场域设计",
+    subtitle: "Brand Growth",
+    detail: "复盘 618 跨平台表现，并围绕奥运节点设计内容、互动与转化路径。",
+    metric: "Brand Growth & Conversion",
     accent: "blue" as const,
     desktopOnly: false,
     targetId: "experience-pg",
@@ -31,9 +31,9 @@ const cards = [
   {
     id: "overview-merchant",
     title: "800+｜合作商家资源对接",
-    subtitle: "Merchant Ops",
-    detail: "支持节盟资源配置与商家落地，帮助快消品类高效匹配渠道与权益。",
-    metric: "Merchant Coordination",
+    subtitle: "Resource Strategy",
+    detail: "梳理站外资源特征、渠道系数与兑换逻辑，支持商家选型及投放配置。",
+    metric: "Go-to-Market Operations",
     accent: "cyan" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
@@ -41,10 +41,10 @@ const cards = [
   },
   {
     id: "overview-content",
-    title: "50+｜多平台内容产出",
-    subtitle: "Content System",
-    detail: "覆盖小红书、微博、B 站等内容适配与投放素材支持。",
-    metric: "Content Marketing",
+    title: "50+｜标准化引流话术",
+    subtitle: "Content SOP",
+    detail: "覆盖 30+ 商家投放，统一多平台表达并提升方案复用与复盘效率。",
+    metric: "Cross-platform Content",
     accent: "silver" as const,
     desktopOnly: false,
     targetId: "experience-bytedance",
@@ -52,10 +52,10 @@ const cards = [
   },
   {
     id: "overview-impact",
-    title: "25%｜个护品类销售额提升",
-    subtitle: "Business Impact",
-    detail: "结合直播策划、产品卖点与营销策略优化，助力节点生意增长。",
-    metric: "Business Results",
+    title: "53%｜直播转化率提升",
+    subtitle: "Conversion Impact",
+    detail: "设计预热节奏、互动机制、货盘组合与卖点包装，单场 GMV 创同期新高。",
+    metric: "Live Commerce Growth",
     accent: "blue" as const,
     desktopOnly: true,
     targetId: "experience-pg",
@@ -63,10 +63,10 @@ const cards = [
   },
   {
     id: "overview-data",
-    title: "Data & AI Workflow｜SQL / SPSS / R / Codex / Claude Code",
+    title: "Data & AI｜SQL / SPSS / Python / R / LLMs",
     subtitle: "Analysis Layer",
-    detail: "将数据分析与 AI 辅助工作流融入内容、分析与表达环节，提高执行效率。",
-    metric: "Data-Driven Decision Making",
+    detail: "用数据分析与 AI 工具支持信息整合、研究分析、内容撰写与任务协同。",
+    metric: "Data & AI Workflow",
     accent: "cyan" as const,
     desktopOnly: true,
     targetId: "experience",
@@ -231,7 +231,7 @@ export function Hero() {
           >
             <div className="mb-8 space-y-3">
               <div className="flex flex-wrap items-center justify-center gap-3">
-                {["大厂市场经历", "增长运营策略", "数据驱动决策"].map((tag) => (
+                {["整合营销策略", "品牌增长运营", "数据驱动复盘"].map((tag) => (
                   <span
                     key={tag}
                     className="rounded-full border border-white/75 bg-white/64 px-4 py-2 text-xs text-slate-700 shadow-[0_14px_36px_rgba(255,255,255,0.2)] backdrop-blur-md sm:text-sm"
@@ -242,9 +242,9 @@ export function Hero() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {[
-                  "Big Tech Marketing Experience",
-                  "Growth Operations Strategy",
-                  "Data-Driven Decision Making",
+                  "GTM Touchpoint Strategy",
+                  "Brand Growth & Conversion",
+                  "Data & AI Workflow",
                 ].map((tag) => (
                   <span
                     key={tag}
@@ -265,16 +265,16 @@ export function Hero() {
 
             <div className="mt-10 space-y-4">
               <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
-                连接市场、运营与产品的复合型候选人
+                GTM、整合营销策略与品牌增长候选人
               </p>
               <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
-                Marketing Growth &amp; Operations Strategy Candidate
+                GTM, Integrated Marketing &amp; Brand Growth Candidate
               </p>
             </div>
 
             <p className="mt-8 max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
-              具备字节跳动与宝洁市场实习经历，关注增长运营、用户洞察与数据驱动决策，
-              能够连接市场、运营与产品相关业务场景。
+              具备字节跳动整合营销策略运营、宝洁品牌增长与国家电网市场营销实习经历，
+              能够围绕用户触点、内容策略和转化链路完成分析、执行与复盘。
             </p>
           </motion.div>
         </div>
