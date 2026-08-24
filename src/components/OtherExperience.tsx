@@ -2,6 +2,8 @@ import { SectionReveal } from "@/components/SectionReveal";
 import { otherExperiences } from "@/lib/content";
 
 export function OtherExperience() {
+  if (!otherExperiences.length) return null;
+
   return (
     <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-14">
       <SectionReveal className="mx-auto max-w-7xl rounded-[34px] border border-slate-200/80 bg-white/82 p-6 shadow-[0_18px_70px_rgba(148,163,184,0.12)] sm:p-8 lg:p-10">
