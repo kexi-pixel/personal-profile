@@ -10,10 +10,10 @@ export function About() {
           </p>
           <div className="space-y-5 text-slate-700">
             <p className="max-w-4xl bg-[linear-gradient(180deg,#0f172a_0%,#334155_78%,#64748b_100%)] bg-clip-text text-2xl font-medium leading-[1.5] tracking-[-0.05em] text-transparent sm:text-3xl [text-wrap:balance]">
-              我关注市场增长、运营策略与用户洞察之间真正发生作用的连接方式，也更在意策略如何落到业务结果上。
+              我关注品牌如何通过清晰的 GTM 路径，把目标人群、触点选择、内容表达与转化承接连接成可复盘的增长闭环。
             </p>
             <p className="max-w-4xl text-base leading-8 text-slate-600 sm:text-lg [text-wrap:balance]">
-              过去的经历覆盖电商营销、全域传播、内容投放、数据复盘与项目协作，让我逐步形成了以业务目标为起点、以数据判断和执行落地为支撑的工作方法。
+              在字节跳动、宝洁与国家电网的经历覆盖整合营销、品牌增长、内容分层、直播场域和数据分析，让我形成了从业务目标出发、以用户触点和数据变量推进策略落地的方法。
             </p>
           </div>
         </div>
