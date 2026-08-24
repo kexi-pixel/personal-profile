@@ -14,7 +14,7 @@ export function Capabilities() {
             Capabilities
           </p>
           <h2 className="text-3xl font-semibold tracking-[-0.05em] text-slate-950 sm:text-4xl lg:text-[2.7rem]">
-            能力结构：GTM 策略 × 品牌增长 × 数据与 AI
+            能力结构：GTM 全链路 × 市场增长 × 数据与 AI
           </h2>
         </div>
 
@@ -54,8 +54,8 @@ export function Capabilities() {
                 Data &amp; AI-Enhanced Workflow
               </h3>
               <p className="mt-4 text-sm leading-7 text-slate-600">
-                熟悉 SQL、SPSS、Python、R，能够结合营销场景完成数据整理、基础建模、效果复盘与洞察提炼；同时使用
-                Codex、ChatGPT、Gemini、Claude Code 支持信息整合、研究分析、内容撰写与任务协同，提升策略与执行效率。
+                使用 SQL、SPSS 与 Office 数据透视表支持市场分析、经营复盘和洞察提炼；同时使用
+                Claude Code、Codex 搭建效率工具并协同信息处理，提升 GTM 策略与执行效率。
               </p>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
