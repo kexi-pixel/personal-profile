@@ -7,69 +7,69 @@ import { HeroEnergyCore } from "@/components/HeroEnergyCore";
 
 const cards = [
   {
-    id: "overview-bytedance",
-    title: "ByteDance｜站外整合营销策略",
-    subtitle: "Integrated Marketing",
-    detail: "围绕地标、交通线、梯媒与内容平台，搭建曝光触达至转化复盘链路。",
-    metric: "GTM Touchpoint Strategy",
+    id: "overview-didi-partnership",
+    title: "滴滴｜全国异业增长",
+    subtitle: "Partnership Growth",
+    detail: "从 0 搭建低成本 BD 模型，主导花小猪 × 德克士全国合作。",
+    metric: "1.34 亿曝光｜CPM 2.5",
     accent: "cyan" as const,
     desktopOnly: false,
-    targetId: "experience-bytedance",
+    targetId: "experience-didi",
     initialPosition: { x: 0.06, y: 0.12 },
   },
   {
-    id: "overview-pg",
-    title: "P&G｜品牌增长与直播场域设计",
-    subtitle: "Brand Growth",
-    detail: "复盘 618 跨平台表现，并围绕奥运节点设计内容、互动与转化路径。",
-    metric: "Brand Growth & Conversion",
+    id: "overview-bytedance",
+    title: "字节跳动｜电商 GTM",
+    subtitle: "E-commerce GTM",
+    detail: "支持双十一节盟计划商家、营销物料与渠道资源上线协同。",
+    metric: "800+ 商家｜使用率 90%",
     accent: "blue" as const,
     desktopOnly: false,
-    targetId: "experience-pg",
+    targetId: "experience-bytedance",
     initialPosition: { x: 0.77, y: 0.13 },
   },
   {
-    id: "overview-merchant",
-    title: "800+｜合作商家资源对接",
-    subtitle: "Resource Strategy",
-    detail: "梳理站外资源特征、渠道系数与兑换逻辑，支持商家选型及投放配置。",
-    metric: "Go-to-Market Operations",
+    id: "overview-dalian",
+    title: "大连｜城市增长",
+    subtitle: "City Growth",
+    detail: "以用户洞察与资源评估搭建曝光、到访、呼叫及完单增长链路。",
+    metric: "完单份额 10.85% → 15.12%",
     accent: "cyan" as const,
     desktopOnly: false,
-    targetId: "experience-bytedance",
+    targetId: "experience-didi",
     initialPosition: { x: 0.09, y: 0.64 },
   },
   {
-    id: "overview-content",
-    title: "50+｜标准化引流话术",
-    subtitle: "Content SOP",
-    detail: "覆盖 30+ 商家投放，统一多平台表达并提升方案复用与复盘效率。",
-    metric: "Cross-platform Content",
+    id: "overview-pg",
+    title: "宝洁｜品牌经营",
+    subtitle: "Brand Marketing",
+    detail: "结合市场与竞品洞察，参与全渠道经营及奥运 IP 直播策划。",
+    metric: "品类销售额 +25%",
     accent: "silver" as const,
     desktopOnly: false,
-    targetId: "experience-bytedance",
+    targetId: "experience-pg",
     initialPosition: { x: 0.74, y: 0.65 },
   },
   {
-    id: "overview-impact",
-    title: "53%｜直播转化率提升",
-    subtitle: "Conversion Impact",
-    detail: "设计预热节奏、互动机制、货盘组合与卖点包装，单场 GMV 创同期新高。",
-    metric: "Live Commerce Growth",
+    id: "overview-wenzhou",
+    title: "温州｜场景增长",
+    subtitle: "Lifecycle Operations",
+    detail: "按人群与出行场景拆解策略，联动本地内容、KOL / KOC 与文化 IP。",
+    metric: "呼叫份额 +2.97 个百分点",
     accent: "blue" as const,
     desktopOnly: true,
-    targetId: "experience-pg",
+    targetId: "experience-didi",
     initialPosition: { x: 0.17, y: 0.33 },
   },
   {
     id: "overview-data",
-    title: "Data & AI｜SQL / SPSS / Python / R / LLMs",
-    subtitle: "Analysis Layer",
-    detail: "用数据分析与 AI 工具支持信息整合、研究分析、内容撰写与任务协同。",
-    metric: "Data & AI Workflow",
+    title: "Data & AI｜分析与提效",
+    subtitle: "Data & AI Enablement",
+    detail: "使用 SQL、SPSS、Office 数据透视表、Codex 与 Claude Code 支持业务分析和工具搭建。",
+    metric: "GTM & AI Workflow",
     accent: "cyan" as const,
     desktopOnly: true,
-    targetId: "experience",
+    targetId: "capabilities",
     initialPosition: { x: 0.67, y: 0.76 },
   },
 ];
@@ -231,7 +231,7 @@ export function Hero() {
           >
             <div className="mb-8 space-y-3">
               <div className="flex flex-wrap items-center justify-center gap-3">
-                {["整合营销策略", "品牌增长运营", "数据驱动复盘"].map((tag) => (
+                {["GTM 全链路", "城市与异业增长", "市场与用户洞察"].map((tag) => (
                   <span
                     key={tag}
                     className="rounded-full border border-white/75 bg-white/64 px-4 py-2 text-xs text-slate-700 shadow-[0_14px_36px_rgba(255,255,255,0.2)] backdrop-blur-md sm:text-sm"
@@ -242,9 +242,9 @@ export function Hero() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {[
-                  "GTM Touchpoint Strategy",
-                  "Brand Growth & Conversion",
-                  "Data & AI Workflow",
+                  "Goal Decomposition",
+                  "Channel & Partnership Growth",
+                  "Cross-functional Launch",
                 ].map((tag) => (
                   <span
                     key={tag}
@@ -265,16 +265,16 @@ export function Hero() {
 
             <div className="mt-10 space-y-4">
               <p className="text-2xl font-medium tracking-[-0.05em] text-slate-900 sm:text-3xl [text-wrap:balance]">
-                GTM、整合营销策略与品牌增长候选人
+                GTM 全链路增长与品牌市场候选人
               </p>
               <p className="font-mono text-sm uppercase tracking-[0.22em] text-slate-500 sm:text-base">
-                GTM, Integrated Marketing &amp; Brand Growth Candidate
+                GTM &amp; Integrated Growth Marketing Candidate
               </p>
             </div>
 
             <p className="mt-8 max-w-2xl text-base leading-8 text-slate-600 [text-wrap:balance]">
-              具备字节跳动整合营销策略运营、宝洁品牌增长与国家电网市场营销实习经历，
-              能够围绕用户触点、内容策略和转化链路完成分析、执行与复盘。
+              具备滴滴、字节跳动与宝洁市场实习经历，能够从市场与用户洞察、经营目标拆解出发，
+              推进渠道与异业增长、跨部门上线协同，并以数据和 AI 完成执行提效与效果复盘。
             </p>
           </motion.div>
         </div>
